@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAFWA — Supabase + GitHub Pages Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--nv:#0f172a;--nv2:#1e293b;--gd:#f59e0b;--gd2:#fcd34d;--gr:#10b981;--rd:#ef4444;--bl:#3b82f6;--pu:#8b5cf6;--tl:#14b8a6;--br:rgba(255,255,255,0.08);--tx:#e2e8f0;--mt:#64748b;--cd:rgba(255,255,255,0.04)}
+body{font-family:'Sora',sans-serif;background:var(--nv);color:var(--tx);line-height:1.6;min-height:100vh}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1a1a3e 50%,#0f172a 100%);border-bottom:1px solid var(--br);padding:56px 40px 48px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(20,184,166,0.12) 0%,transparent 70%)}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(20,184,166,0.15);border:1px solid rgba(20,184,166,0.3);color:#5eead4;font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px}
+.hero h1{font-size:clamp(26px,5vw,50px);font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:12px}
+.hero h1 .t{color:#14b8a6}.hero h1 .g{color:var(--gd)}
+.hero p{font-size:15px;color:#94a3b8;max-width:580px;margin:0 auto 28px}
+.hero-tags{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.htag{background:rgba(255,255,255,0.06);border:1px solid var(--br);padding:5px 14px;border-radius:20px;font-size:12px;color:#94a3b8}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--br);display:flex;justify-content:center;gap:3px;padding:10px 20px;flex-wrap:wrap}
+.nb{padding:7px 15px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:'Sora',sans-serif;transition:all 0.2s;white-space:nowrap}
+.nb:hover{color:var(--tx);background:rgba(255,255,255,0.05)}
+.nb.on{background:var(--tl);color:#0f172a}
+
+/* ── WRAPPER ── */
+.wrap{max-width:860px;margin:0 auto;padding:48px 22px}
+
+/* ── PART HEADER ── */
+.ph{display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--br)}
+.pi{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.p-title{font-size:24px;font-weight:800;color:#fff}
+.p-sub{font-size:13px;color:#64748b;margin-top:2px}
+
+/* ── STEP ── */
+.step{display:flex;gap:20px;margin-bottom:6px}
+.snc{display:flex;flex-direction:column;align-items:center}
+.sn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;font-family:'IBM Plex Mono',monospace}
+.sl{width:2px;flex:1;background:var(--br);margin:6px 0;min-height:20px}
+.sb_{flex:1;padding-bottom:26px}
+.st{font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;margin-top:6px}
+.st .sub{font-size:11px;color:#64748b;font-weight:400;margin-left:8px}
+
+/* ── INSTRUCTION BOX ── */
+.ib{background:var(--cd);border:1px solid var(--br);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.ir{display:flex;align-items:flex-start;gap:13px;padding:13px 15px;border-bottom:1px solid var(--br)}
+.ir:last-child{border-bottom:none}
+.in{width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,0.07);color:#94a3b8;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.it{font-size:13.5px;color:#cbd5e1;line-height:1.6}
+.it strong{color:#fff;font-weight:700}
+.it em{color:var(--gd);font-style:normal;font-weight:600}
+.click{display:inline-block;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);color:var(--gd2);padding:1px 8px;border-radius:5px;font-size:12px;font-weight:700;cursor:default}
+.ui{display:inline-block;background:rgba(255,255,255,0.07);border:1px solid var(--br);color:#e2e8f0;padding:1px 8px;border-radius:5px;font-size:12px}
+.url{color:#60a5fa;text-decoration:none;word-break:break-all}
+.url:hover{text-decoration:underline}
+.val{font-family:'IBM Plex Mono',monospace;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);color:#34d399;padding:1px 7px;border-radius:4px;font-size:12px}
+
+/* ── CODE BLOCK ── */
+.code{background:#070d1a;border:1px solid rgba(59,130,246,0.2);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.code-h{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:rgba(59,130,246,0.08);border-bottom:1px solid rgba(59,130,246,0.15)}
+.code-l{font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:1px;font-family:'IBM Plex Mono',monospace}
+.copy{font-size:11px;padding:3px 10px;border-radius:5px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;cursor:pointer;font-family:'Sora',sans-serif;font-weight:600;transition:all 0.15s}
+.copy:hover{background:rgba(59,130,246,0.25)}
+.copy.done{background:rgba(16,185,129,0.2);border-color:rgba(16,185,129,0.3);color:#6ee7b7}
+pre{padding:16px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.7;color:#e2e8f0;margin:0}
+.cm{color:#334155}.ck{color:#93c5fd}.cs{color:#a78bfa}.cg{color:#6ee7b7}.cy{color:#fcd34d}.cr{color:#f87171}
+
+/* ── ALERT ── */
+.al{display:flex;gap:11px;padding:12px 14px;border-radius:9px;margin-bottom:10px;font-size:13px;line-height:1.5}
+.al .ic{font-size:15px;flex-shrink:0;margin-top:1px}
+.alw{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:#fcd34d}
+.ali{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);color:#93c5fd}
+.als{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7}
+.ale{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5}
+.al p{color:inherit}
+.al strong{color:#fff}
+
+/* ── DIVIDER ── */
+.div{height:1px;background:linear-gradient(90deg,transparent,var(--br),transparent);margin:48px 0}
+
+/* ── PROGRESS ── */
+.prog{margin-bottom:36px}
+.prog-l{display:flex;justify-content:space-between;font-size:12px;color:#475569;margin-bottom:6px}
+.prog-b{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.prog-f{height:100%;border-radius:2px}
+
+/* ── CRED TABLE ── */
+.ctbl{width:100%;border-collapse:collapse;border-radius:9px;overflow:hidden;border:1px solid var(--br);margin-bottom:10px}
+.ctbl th{background:rgba(20,184,166,0.12);color:#5eead4;font-size:11px;font-weight:700;padding:10px 13px;text-align:left;letter-spacing:.5px}
+.ctbl td{padding:11px 13px;font-size:13px;color:#cbd5e1;border-top:1px solid var(--br)}
+.ctbl td:first-child{font-family:'IBM Plex Mono',monospace;color:var(--gd2)}
+
+/* ── FOOTER ── */
+.foot{text-align:center;padding:40px 20px;border-top:1px solid var(--br);color:#334155;font-size:12px}
+.foot strong{color:#475569}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">📘 Complete Baby-Steps Guide</div>
+  <h1>PAFWA APF<br><span class="t">Supabase</span> + <span class="g">GitHub Pages</span></h1>
+  <p>Every single step explained from scratch — no experience needed. Follow in order and your system will be live.</p>
+  <div class="hero-tags">
+    <span class="htag">⏱ ~60 minutes total</span>
+    <span class="htag">💻 Windows PC</span>
+    <span class="htag">🆓 100% Free</span>
+    <span class="htag">☁️ Online forever</span>
+    <span class="htag">📱 Works on any device</span>
+  </div>
+</div>
+
+<div class="nav" id="NAV">
+  <button class="nb on" onclick="go('p1',this)">1 · Supabase DB</button>
+  <button class="nb" onclick="go('p2',this)">2 · SQL Schema</button>
+  <button class="nb" onclick="go('p3',this)">3 · GitHub Push</button>
+  <button class="nb" onclick="go('p4',this)">4 · GitHub Pages</button>
+  <button class="nb" onclick="go('p5',this)">5 · First Login</button>
+  <button class="nb" onclick="go('p6',this)">6 · Troubleshoot</button>
+</div>
+
+<div class="wrap">
+
+<!-- ═══════════════════════ PART 1: SUPABASE -->
+<div id="p1">
+  <div class="ph">
+    <div class="pi" style="background:rgba(20,184,166,0.15);border:1px solid rgba(20,184,166,0.2)">🗄️</div>
+    <div><div class="p-title">Part 1 — Create Supabase Database</div><div class="p-sub">Supabase is your free cloud database — it stores all inventory, sales, users and receipts</div></div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-l"><span>Supabase Setup</span><span>6 steps · ~15 min</span></div>
+    <div class="prog-b"><div class="prog-f" style="width:100%;background:linear-gradient(90deg,#14b8a6,#0ea5e9)"></div></div>
+  </div>
+
+  <div class="al ali"><span class="ic">💡</span><p><strong>What is Supabase?</strong> It's like a free database in the cloud. Your PAFWA data (items, sales, users) will be stored there safely. It's free for small apps and needs no server.</p></div>
+
+  <!-- S1 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#14b8a6;color:#0f172a">1</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Create a Supabase Account</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Open your browser and go to <a class="url" href="https://supabase.com" target="_blank">https://supabase.com</a></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click the big <span class="click">Start your project</span> button</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Click <span class="click">Sign in with GitHub</span> — it will open GitHub login. Sign in with your GitHub account (or create one free at github.com first)</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Supabase will ask permission to connect to GitHub. Click <span class="click">Authorize supabase</span></div></div>
+        <div class="ir"><div class="in">e</div><div class="it">You will land on the Supabase dashboard. You have an account! ✅</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#14b8a6;color:#0f172a">2</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Create a New Project</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">On the Supabase dashboard, click <span class="click">+ New project</span></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Under <span class="ui">Organisation</span> — keep the default (your username)</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Under <span class="ui">Project name</span> type: <span class="val">pafwa-apf</span></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Under <span class="ui">Database Password</span> — click <span class="click">Generate a password</span> and <strong>copy the generated password to Notepad</strong>. You may need it later.</div></div>
+        <div class="ir"><div class="in">e</div><div class="it">Under <span class="ui">Region</span> — select <strong>Southeast Asia (Singapore)</strong> — closest to Pakistan for fastest speed</div></div>
+        <div class="ir"><div class="in">f</div><div class="it">Click <span class="click">Create new project</span></div></div>
+        <div class="ir"><div class="in">g</div><div class="it">Wait about 2 minutes. You will see a progress bar. When done, you'll see the project dashboard.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#14b8a6;color:#0f172a">3</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Copy Your Project URL and Anon Key</div>
+      <div class="al alw"><span class="ic">⚠️</span><p><strong>Very important!</strong> You need these two values to connect the app to your database. Save them in Notepad.</p></div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">In your Supabase project, look at the left sidebar and click <span class="ui">⚙ Project Settings</span> (the gear icon at the bottom)</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click <span class="ui">API</span> in the settings menu</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Under <strong>Project URL</strong> — copy the URL that looks like: <span class="val">https://xxxxxxxxxxx.supabase.co</span> and paste in Notepad</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Under <strong>Project API keys</strong>, find the row that says <em>anon public</em> — click the <span class="click">Copy</span> icon next to it. Paste this long key in Notepad too.</div></div>
+      </div>
+      <div class="al als"><span class="ic">✅</span><p>You should now have 2 things saved in Notepad:<br><strong>1.</strong> Project URL → <span class="val">https://xxx.supabase.co</span><br><strong>2.</strong> Anon Key → <span class="val">eyJhbGci... (very long text)</span></p></div>
+    </div>
+  </div>
+
+  <!-- S4 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#14b8a6;color:#0f172a">4</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Enable Email Authentication</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">In the left sidebar click <span class="ui">Authentication</span></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click <span class="ui">Providers</span> tab at the top</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Find <strong>Email</strong> in the list — it should already be enabled (toggle is blue). If not, click to enable it.</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Make sure <strong>"Confirm email"</strong> is <em>turned OFF</em> (toggle grey) — this lets users log in immediately without email confirmation</div></div>
+        <div class="ir"><div class="in">e</div><div class="it">Click <span class="click">Save</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#14b8a6;color:#0f172a">5</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Create the Storage Bucket for Item Images</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">In the left sidebar click <span class="ui">Storage</span></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click <span class="click">New bucket</span></div></div>
+        <div class="ir"><div class="in">c</div><div class="it">In the <span class="ui">Name</span> box type: <span class="val">item-images</span></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Toggle <strong>"Public bucket"</strong> to ON (blue) — this allows item images to be visible in the app</div></div>
+        <div class="ir"><div class="in">e</div><div class="it">Click <span class="click">Save</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#14b8a6;color:#0f172a">6</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Add Your GitHub Pages URL to Allowed Origins</div>
+      <div class="al ali"><span class="ic">ℹ️</span><p>This allows your website (on GitHub Pages) to communicate with Supabase. Without this, the app will be blocked.</p></div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">In Supabase, go to <span class="ui">⚙ Project Settings</span> → <span class="ui">API</span></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Scroll down to <strong>Allowed CORS origins</strong> (or "API Settings")</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Also go to <span class="ui">⚙ Project Settings</span> → <span class="ui">Authentication</span> → <strong>URL Configuration</strong></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">In <span class="ui">Site URL</span> enter: <span class="val">https://maverick1427.github.io/PAFWA</span></div></div>
+        <div class="ir"><div class="in">e</div><div class="it">In <span class="ui">Redirect URLs</span> click <span class="click">Add URL</span> and add: <span class="val">https://maverick1427.github.io/PAFWA</span></div></div>
+        <div class="ir"><div class="in">f</div><div class="it">Click <span class="click">Save</span></div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end p1 -->
+<div class="div"></div>
+
+<!-- ═══════════════════════ PART 2: SQL SCHEMA -->
+<div id="p2">
+  <div class="ph">
+    <div class="pi" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.2)">📋</div>
+    <div><div class="p-title">Part 2 — Run the Database Schema</div><div class="p-sub">This creates all the tables and security rules in your Supabase database</div></div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-l"><span>Database Schema</span><span>3 steps · ~5 min</span></div>
+    <div class="prog-b"><div class="prog-f" style="width:100%;background:linear-gradient(90deg,#8b5cf6,#ec4899)"></div></div>
+  </div>
+
+  <div class="al alw"><span class="ic">⚠️</span><p><strong>Do this only once.</strong> This sets up all the database tables for inventory, sales, users, etc. Running it twice is safe — it won't break anything.</p></div>
+
+  <!-- S1 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#8b5cf6;color:#fff">1</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Open the SQL Editor in Supabase</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">In your Supabase project, look at the left sidebar and click <span class="ui">SQL Editor</span> (the &lt;/&gt; icon)</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click <span class="click">+ New query</span> at the top left</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">You will see a big empty text area — this is where you will paste the SQL code</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#8b5cf6;color:#fff">2</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Open and Copy the Schema File</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Open your <strong>PAFWA-SB</strong> folder on Desktop</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Find the file called <strong>schema.sql</strong></div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Right-click it → <span class="click">Open with</span> → <span class="click">Notepad</span></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Press <strong>Ctrl + A</strong> to select all the text, then <strong>Ctrl + C</strong> to copy it</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#8b5cf6;color:#fff">3</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Paste and Run the Schema</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Go back to Supabase SQL Editor. Click inside the empty text area.</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Press <strong>Ctrl + A</strong> to select all, then <strong>Ctrl + V</strong> to paste your copied schema</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Click the green <span class="click">▶ Run</span> button at the top right (or press <strong>Ctrl + Enter</strong>)</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Wait about 10-15 seconds. At the bottom you should see: <span class="val">Success. No rows returned</span></div></div>
+      </div>
+      <div class="al als"><span class="ic">✅</span><p><strong>Success!</strong> Your database now has all tables: items, sales, receipts, users, logs, categories and settings. The security rules are also applied.</p></div>
+      <div class="al ale"><span class="ic">❌</span><p>If you see a red error message — scroll up in this guide to check that you completed Part 1 fully. Common issue: forgetting to enable Email Authentication.</p></div>
+    </div>
+  </div>
+
+</div><!-- end p2 -->
+<div class="div"></div>
+
+<!-- ═══════════════════════ PART 3: GITHUB PUSH -->
+<div id="p3">
+  <div class="ph">
+    <div class="pi" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.2)">🐙</div>
+    <div><div class="p-title">Part 3 — Push Code to GitHub</div><div class="p-sub">Upload the PAFWA app files to your GitHub repository</div></div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-l"><span>GitHub Upload</span><span>7 steps · ~15 min</span></div>
+    <div class="prog-b"><div class="prog-f" style="width:100%;background:linear-gradient(90deg,var(--gd),#f97316)"></div></div>
+  </div>
+
+  <!-- S1 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--gd);color:#0f172a">1</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Install Git on Your PC <span class="sub">skip if already done</span></div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Go to <a class="url" href="https://git-scm.com/download/win" target="_blank">https://git-scm.com/download/win</a></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click <em>"64-bit Git for Windows Setup"</em> — it downloads automatically</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Run the downloaded file. Click <span class="click">Next</span> on every screen without changing anything.</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Click <span class="click">Install</span> then <span class="click">Finish</span></div></div>
+      </div>
+      <div class="al als"><span class="ic">✅</span><p><strong>Check it worked:</strong> Press <strong>Win + R</strong>, type <span class="val">cmd</span>, press Enter. Type <span class="val">git --version</span> and press Enter. You should see: <span class="val">git version 2.x.x</span></p></div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--gd);color:#0f172a">2</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Create/Verify Your GitHub Account</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Go to <a class="url" href="https://github.com" target="_blank">https://github.com</a> and sign in (or sign up free)</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Your username is: <span class="val">maverick1427</span> (based on the repo URL you gave)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--gd);color:#0f172a">3</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Create GitHub Personal Access Token</div>
+      <div class="al alw"><span class="ic">⚠️</span><p>GitHub doesn't accept passwords anymore for uploading code. A Personal Access Token is like a special password just for this purpose.</p></div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Go to <a class="url" href="https://github.com/settings/tokens/new" target="_blank">https://github.com/settings/tokens/new</a></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">In <span class="ui">Note</span> type: <span class="val">PAFWA Deploy</span></div></div>
+        <div class="ir"><div class="in">c</div><div class="it">In <span class="ui">Expiration</span> select: <strong>90 days</strong></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Under <span class="ui">Select scopes</span>, tick the big <strong>repo</strong> checkbox (first one in the list)</div></div>
+        <div class="ir"><div class="in">e</div><div class="it">Scroll down and click <span class="click">Generate token</span></div></div>
+        <div class="ir"><div class="in">f</div><div class="it">You will see a token starting with <span class="val">ghp_...</span> — <strong>copy it immediately and paste in Notepad</strong>. You won't see it again!</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--gd);color:#0f172a">4</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Create the GitHub Repository</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Go to <a class="url" href="https://github.com/new" target="_blank">https://github.com/new</a></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Repository name: <span class="val">PAFWA</span></div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Select <strong>Private</strong></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Leave everything else unchecked. Click <span class="click">Create repository</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--gd);color:#0f172a">5</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Extract the PAFWA-SB ZIP File</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Find <strong>PAFWA_Supabase.zip</strong> in your Downloads or Desktop</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Right-click → <span class="click">Extract All…</span></div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Extract to Desktop. A folder called <strong>PAFWA-SB</strong> appears.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--gd);color:#0f172a">6</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Open Command Prompt Inside the Folder</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Open the <strong>PAFWA-SB</strong> folder (double-click it)</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click the address bar at the top of the window (where it shows the folder path) — the text turns blue</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Type <span class="val">cmd</span> and press <strong>Enter</strong></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">A black window opens. It should show: <span class="val">C:\Users\A Khan\Desktop\PAFWA-SB&gt;</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--gd);color:#0f172a">7</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Run These Commands to Upload to GitHub 🚀</div>
+      <p style="font-size:13px;color:#64748b;margin-bottom:10px">Type each command and press Enter. Wait for each to finish before typing the next.</p>
+      <div class="code">
+        <div class="code-h"><span class="code-l">Command Prompt — run in order</span><button class="copy" onclick="cc(this)">Copy All</button></div>
+        <pre><span class="cm">:: Set your name and email (once only on this PC)</span>
+git config --global user.name <span class="cs">"A Khan"</span>
+git config --global user.email <span class="cs">"your@email.com"</span>
+
+<span class="cm">:: Initialize git in the PAFWA-SB folder</span>
+git init
+
+<span class="cm">:: Stage all files</span>
+git add .
+
+<span class="cm">:: Create first commit</span>
+git commit -m <span class="cs">"PAFWA v2.0 Supabase + GitHub Pages"</span>
+
+<span class="cm">:: Set branch name</span>
+git branch -M main
+
+<span class="cm">:: Connect to your GitHub repo</span>
+git remote add origin https://github.com/<span class="cy">maverick1427</span>/PAFWA.git
+
+<span class="cm">:: Push (upload) — enter token when asked for password</span>
+git push -u origin main</pre>
+      </div>
+      <div class="al alw"><span class="ic">🔐</span><p>When CMD asks for <strong>Username</strong>: type <span class="val">maverick1427</span><br>When CMD asks for <strong>Password</strong>: paste your <span class="val">ghp_...</span> token (right-click to paste). The cursor won't move — that's normal, just press Enter.</p></div>
+      <div class="al als"><span class="ic">✅</span><p><strong>Success looks like:</strong> <span class="val">Branch 'main' set up to track remote branch 'main' from 'origin'</span><br>Now go to <a class="url" href="https://github.com/maverick1427/PAFWA" target="_blank">github.com/maverick1427/PAFWA</a> — you'll see all your files listed!</p></div>
+    </div>
+  </div>
+
+</div><!-- end p3 -->
+<div class="div"></div>
+
+<!-- ═══════════════════════ PART 4: GITHUB PAGES -->
+<div id="p4">
+  <div class="ph">
+    <div class="pi" style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.2)">🌐</div>
+    <div><div class="p-title">Part 4 — Enable GitHub Pages (Go Live)</div><div class="p-sub">Turn on GitHub's free web hosting so the app is accessible from any browser, anywhere</div></div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-l"><span>GitHub Pages</span><span>4 steps · ~5 min</span></div>
+    <div class="prog-b"><div class="prog-f" style="width:100%;background:linear-gradient(90deg,var(--bl),var(--pu))"></div></div>
+  </div>
+
+  <!-- S1 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--bl);color:#fff">1</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Enable GitHub Pages on Your Repo</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Go to your GitHub repo: <a class="url" href="https://github.com/maverick1427/PAFWA" target="_blank">https://github.com/maverick1427/PAFWA</a></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click <span class="ui">Settings</span> tab at the top of the repo (not account settings — the repo settings)</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">In the left sidebar, click <span class="ui">Pages</span></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Under <span class="ui">Source</span>, click the dropdown and select <strong>GitHub Actions</strong></div></div>
+        <div class="ir"><div class="in">e</div><div class="it">That's it — just selecting "GitHub Actions" is enough. No need to click Save separately.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--bl);color:#fff">2</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Check the GitHub Action is Running</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">On your GitHub repo, click the <span class="ui">Actions</span> tab at the top</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">You should see a workflow called <strong>"Deploy PAFWA to GitHub Pages"</strong> running (yellow circle 🟡)</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Wait about 1-2 minutes. The circle turns into a green tick ✅</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">If it shows a red ✗ — see Part 6 (Troubleshoot)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--bl);color:#fff">3</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Find Your Live App URL</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Go to repo <span class="ui">Settings</span> → <span class="ui">Pages</span></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">You will see a box that says: <em>"Your site is live at"</em> with a URL like: <span class="val">https://maverick1427.github.io/PAFWA</span></div></div>
+        <div class="ir"><div class="in">c</div><div class="it"><strong>Bookmark this URL</strong> — this is your permanent app address. Share it with your staff.</div></div>
+      </div>
+      <div class="al als"><span class="ic">🎉</span><p><strong>Your PAFWA app is now live!</strong> Open the URL in Chrome or Edge. Every time you push changes to GitHub, the website updates automatically within 2 minutes.</p></div>
+    </div>
+  </div>
+
+  <!-- S4 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:var(--bl);color:#fff">4</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Make the Repo Public (Required for Free GitHub Pages)</div>
+      <div class="al alw"><span class="ic">⚠️</span><p>GitHub Pages only works for free with <strong>public repositories</strong>. A public repo means anyone can see your code — but <strong>not your data</strong> (data is in Supabase, not GitHub).</p></div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Go to repo <span class="ui">Settings</span> → scroll to the very bottom to <strong>Danger Zone</strong></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click <span class="click">Change repository visibility</span> → <span class="click">Change to public</span></div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Type the repo name to confirm: <span class="val">PAFWA</span> → Click <span class="click">I understand, change repository visibility</span></div></div>
+      </div>
+      <div class="al ali"><span class="ic">💡</span><p><strong>Alternative:</strong> If you want to keep the repo private, you need GitHub Pro ($4/month). But making it public is perfectly safe — your Supabase database is protected by passwords and security rules.</p></div>
+    </div>
+  </div>
+
+</div><!-- end p4 -->
+<div class="div"></div>
+
+<!-- ═══════════════════════ PART 5: FIRST LOGIN -->
+<div id="p5">
+  <div class="ph">
+    <div class="pi" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.2)">🔐</div>
+    <div><div class="p-title">Part 5 — First Login & Initial Setup</div><div class="p-sub">Open the app, connect to Supabase, create your admin account and configure settings</div></div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-l"><span>App Setup</span><span>5 steps · ~10 min</span></div>
+    <div class="prog-b"><div class="prog-f" style="width:100%;background:linear-gradient(90deg,#10b981,#14b8a6)"></div></div>
+  </div>
+
+  <!-- S1 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#10b981;color:#fff">1</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Open the App and Enter Supabase Config</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Open your app URL in Chrome: <span class="val">https://maverick1427.github.io/PAFWA</span></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">A setup screen appears asking for <strong>Supabase Project URL</strong> and <strong>Anon Key</strong></div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Open your Notepad where you saved these values in Part 1 Step 3</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Paste the <strong>Project URL</strong> into the first box (e.g. <span class="val">https://xxx.supabase.co</span>)</div></div>
+        <div class="ir"><div class="in">e</div><div class="it">Paste the <strong>Anon Key</strong> into the second box (the long <span class="val">eyJhbGci...</span> text)</div></div>
+        <div class="ir"><div class="in">f</div><div class="it">Click <span class="click">🚀 Connect & Start</span></div></div>
+      </div>
+      <div class="al ali"><span class="ic">💾</span><p>This config is saved <strong>only in your browser</strong> — so each device you use needs to enter the config once. After that, it's remembered automatically.</p></div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#10b981;color:#fff">2</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Create Your Admin Account</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">After connecting, a <strong>"Create Admin"</strong> screen appears (only the very first time)</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Enter a <strong>Username</strong> (e.g. <span class="val">admin</span>)</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Enter your <strong>Full Name</strong> (e.g. <span class="val">A Khan</span>)</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Choose a strong <strong>Password</strong> — at least 8 characters, mix of letters and numbers</div></div>
+        <div class="ir"><div class="in">e</div><div class="it">Confirm password and click <span class="click">✅ Create Administrator Account</span></div></div>
+        <div class="ir"><div class="in">f</div><div class="it">The page reloads and you see the Login screen</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#10b981;color:#fff">3</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Login and Configure Organisation Settings</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">On the login screen, enter your username and password, click <span class="click">Login</span></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">You are now inside the app! Click <span class="ui">⚙️ Settings</span> in the left sidebar</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Set <strong>Organisation Name</strong>: <span class="val">PAFWA APF</span></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Set <strong>Location / Unit</strong>: <span class="val">PAC KAMRA</span></div></div>
+        <div class="ir"><div class="in">e</div><div class="it">Set <strong>Receipt Footer</strong>: <span class="val">Received with Thanks</span></div></div>
+        <div class="ir"><div class="in">f</div><div class="it">Set <strong>Next Receipt Number</strong> to where you want to start (e.g. <span class="val">119</span> if last paper receipt was 118)</div></div>
+        <div class="ir"><div class="in">g</div><div class="it">Click <span class="click">💾 Save Settings</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#10b981;color:#fff">4</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Add Staff Users</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Click <span class="ui">👥 Users</span> in the sidebar</div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Click <span class="click">+ Add User</span></div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Enter Username (e.g. <span class="val">zara_staff</span>), Full Name, Password (min 6 chars)</div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Set Role to <strong>Staff</strong> — staff can process sales but cannot see cost prices, logs or manage users</div></div>
+        <div class="ir"><div class="in">e</div><div class="it">Click <span class="click">Create User</span> — they can now log in from any device using their username and password</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5 -->
+  <div class="step">
+    <div class="snc"><div class="sn" style="background:#10b981;color:#fff">5</div><div class="sl"></div></div>
+    <div class="sb_">
+      <div class="st">Add Inventory Items and Test a Sale</div>
+      <div class="ib">
+        <div class="ir"><div class="in">a</div><div class="it">Click <span class="ui">📦 Inventory</span> → <span class="click">+ Add Item</span></div></div>
+        <div class="ir"><div class="in">b</div><div class="it">Enter item name, sale price, stock quantity. Upload an image if you want.</div></div>
+        <div class="ir"><div class="in">c</div><div class="it">Click <span class="ui">🛒 Shop / POS</span> → select an item → enter customer name → click <span class="click">Complete Sale</span></div></div>
+        <div class="ir"><div class="in">d</div><div class="it">Click <span class="click">🖨️ Print Receipt PDF</span> → click <strong>Save as PDF</strong> in the print dialog</div></div>
+      </div>
+      <div class="al als"><span class="ic">🎉</span><p><strong>Your PAFWA system is fully live and working!</strong> All data syncs to Supabase cloud automatically. It works on any PC, tablet or phone that opens the URL.</p></div>
+    </div>
+  </div>
+
+</div><!-- end p5 -->
+<div class="div"></div>
+
+<!-- ═══════════════════════ PART 6: TROUBLESHOOT -->
+<div id="p6">
+  <div class="ph">
+    <div class="pi" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.2)">🛠️</div>
+    <div><div class="p-title">Part 6 — Troubleshooting</div><div class="p-sub">Solutions to every common problem you might encounter</div></div>
+  </div>
+
+  <div class="ib" style="margin-bottom:12px">
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">"Invalid URL" error when connecting Supabase</strong><br>
+      Make sure the URL ends with <span class="val">.supabase.co</span> with no trailing slash. Copy it exactly from Supabase Project Settings → API.</div>
+    </div>
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">"Row level security policy" error after login</strong><br>
+      The SQL schema was not run fully. Go to Supabase SQL Editor, paste the schema.sql content again and run it.</div>
+    </div>
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">GitHub Action fails with red ✗</strong><br>
+      Click the red ✗ → click the failed job → read the error message. Usually it means GitHub Pages is not enabled. Go to Settings → Pages → set Source to "GitHub Actions".</div>
+    </div>
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">App URL shows 404 page not found</strong><br>
+      GitHub Pages might not be enabled or the Action hasn't run yet. Wait 2 minutes and refresh. Also make sure the repo is Public (Settings → Danger Zone → Change to public).</div>
+    </div>
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">"Authentication failed" when pushing from CMD</strong><br>
+      You used your GitHub password instead of the Personal Access Token. Generate a new token at github.com/settings/tokens and use that as the password.</div>
+    </div>
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">Images not uploading to items</strong><br>
+      The <span class="val">item-images</span> storage bucket was not created or is not public. Go to Supabase → Storage → check if bucket exists with "Public" status.</div>
+    </div>
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">Login works but data doesn't appear</strong><br>
+      The schema SQL was not run. Go to Supabase → Table Editor — if you see no tables listed, run the schema.sql again in SQL Editor.</div>
+    </div>
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">Staff on another device can't log in</strong><br>
+      They need to enter the Supabase config on their device first (click "Change Supabase Config" on login page). After that it's saved in their browser.</div>
+    </div>
+    <div class="ir">
+      <div class="in" style="background:rgba(239,68,68,0.2);color:#fca5a5">!</div>
+      <div class="it"><strong style="color:#fca5a5">"git is not recognized" in Command Prompt</strong><br>
+      Git is not installed properly. Go back to Part 3 Step 1, reinstall Git, restart your PC, then try again.</div>
+    </div>
+  </div>
+
+  <div class="al als">
+    <span class="ic">✅</span>
+    <p><strong>Everything working?</strong> Bookmark your app URL: <span class="val">https://maverick1427.github.io/PAFWA</span><br><br>
+    <strong>To make future updates:</strong> Edit any file in your PAFWA-SB folder → open CMD there → run:<br>
+    <span class="val">git add . &amp;&amp; git commit -m "update" &amp;&amp; git push</span><br>
+    The website updates automatically in ~2 minutes.</p>
+  </div>
+
+  <div class="al ali">
+    <span class="ic">📱</span>
+    <p><strong>Using on mobile phones/tablets:</strong> Open the app URL in Chrome on any Android or iPhone. It works as a full web app. You can also add it to your home screen: in Chrome tap the menu → "Add to Home Screen" — it will look and feel like a normal app.</p>
+  </div>
+
+</div><!-- end p6 -->
+
+</div><!-- end wrap -->
+
+<div class="foot">
+  <strong>PAFWA APF Inventory System v2.0</strong> · Pakistan Air Force Women Association · PAC Kamra<br>
+  Supabase PostgreSQL + GitHub Pages · Built for offline-capable cloud deployment
+</div>
+
+<script>
+function go(id,btn){
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+}
+function cc(btn){
+  const pre=btn.closest('.code').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(()=>{
+    btn.textContent='✓ Copied!';btn.classList.add('done');
+    setTimeout(()=>{btn.textContent='Copy All';btn.classList.remove('done');},2000);
+  });
+}
+// Scroll spy
+const secs=['p1','p2','p3','p4','p5','p6'];
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY+130;
+  secs.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el&&el.offsetTop<=y){
+      document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+    }
+  });
+});
+</script>
+</body>
+</html>
