@@ -361,18 +361,22 @@ async function doLogin(){
   const btn=$('lbtn'), err=$('lerr');
   if(!u||!p){ if(err)err.textContent='Enter username and password'; return; }
   if(btn){btn.disabled=true;btn.textContent='Logging in…';}
+  if(err)err.textContent='';
   try{
-    // Look up username → get email
-    const {data:prof}=await sb.from('profiles').select('id').eq('username',u).eq('active',true).single();
-    if(!prof){ if(err)err.textContent='Invalid username or password'; if(btn){btn.disabled=false;btn.textContent='🔐 Login';} return; }
+    // Sign in directly — no pre-auth DB lookup needed
+    // Username maps to email as username@pafwa.local
     const email=`${u}@pafwa.local`;
     const {data,error}=await sb.auth.signInWithPassword({email,password:p});
-    if(error) throw error;
-    // Update last_login
-    await sb.from('profiles').update({last_login:new Date().toISOString()}).eq('id',data.user.id);
-    await addLog('LOGIN',`${u} logged in`);
+    if(error){
+      // Give a clean message regardless of Supabase error wording
+      if(err)err.textContent='Invalid username or password';
+      if(btn){btn.disabled=false;btn.textContent='🔐 Login';}
+      return;
+    }
+    // Update last_login silently (fire and forget — won't block login if it fails)
+    sb.from('profiles').update({last_login:new Date().toISOString()}).eq('id',data.user.id).then(()=>{});
   }catch(e){
-    if(err) err.textContent=(e.message.includes('Invalid')||e.message.includes('credentials'))?'Invalid username or password':e.message;
+    if(err)err.textContent='Login error: '+e.message;
     if(btn){btn.disabled=false;btn.textContent='🔐 Login';}
   }
 }
